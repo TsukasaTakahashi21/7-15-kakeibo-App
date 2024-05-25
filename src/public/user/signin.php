@@ -23,14 +23,14 @@ $password = isset($_SESSION['password']) ? $_SESSION['password'] : '';
   <?php if (!empty($errors)): ?>
     <ul>
       <?php foreach ($errors as $error): ?>
-        <li><?php echo $error; ?></li>
+        <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
       <?php endforeach; ?>
     </ul>
   <?php endif; ?>
   <!-- ログインフォーム -->
   <form action="./signin_complete.php" method="post">
-    <input type="email" name="email" placeholder="Email" value="<?php echo $email; ?>"><br>
-    <input type="password" name="password"  value="<?php echo $password; ?>"><br>
+    <input type="email" name="email" placeholder="Email" value="<?php echo htmlentities($email, ENT_QUOTES, 'UTF-8'); ?>"><br>
+    <input type="password" name="password"  value="<?php echo htmlspecialchars($password, ENT_QUOTES, 'UTF-8'); ?>"><br>
     <button type="submit">ログイン</button>
   </form>
   <a href="./signup.php">アカウントを作る</a>
