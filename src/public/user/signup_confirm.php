@@ -29,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // 同一のemailがすでに保存されている場合
   $sql = 'SELECT count(*) as count FROM users WHERE email = :email';
   $statement = $pdo->prepare($sql);
-  $statement = $pdo->prepare($sql);
   $statement->bindValue(':email', $email, PDO::PARAM_STR);
   $statement->execute();
   $result = $statement->fetch(PDO::FETCH_ASSOC);
@@ -44,6 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
   }
 }
+// POSTでのリクエストでない場合やエラーがない場合は、空の値で初期化
+$username = '';
+$email = '';
+$password = '';
 ?>
 
 <!DOCTYPE html>
@@ -57,11 +60,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <p>こちらの内容で登録してよろしいですか</p>
   <form action="signup_complete.php" method="post">
     <label for="user_name">ユーザー名:</label><br>
-    <input type="text" name="user_name", value="<?php echo $username; ?>"><br>
+    <input type="text" name="user_name" value="<?php echo htmlspecialchars($username, ENT_QUOTES, 'UTF-8'); ?>"><br>
     <label for="email">メールアドレス:</label><br>
-    <input type="email" name="email" value="<?php echo $email; ?>"><br>
+    <input type="email" name="email" value="<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>"><br>
     <label for="user_name">パスワード:</label><br>
-    <input type="password" name="password" value="<?php echo $password; ?>"><br>
+    <input type="password" name="password" value="<?php echo htmlspecialchars($password, ENT_QUOTES, 'UTF-8'); ?>"><br>
     <button type="submit">送信</button>
   </form>
 </body>

@@ -19,16 +19,16 @@
       <?php if(!empty($errors)): ?>
         <ul>
           <?php foreach ($errors as $error): ?>
-            <li><?php echo $error; ?></li>
+            <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
           <?php endforeach; ?>
         </ul>
       <?php endif; ?>
 
       <form action="./signup_confirm.php" method="post">
-        <input type="text" name="user_name", placeholder="User name"><br>
-        <input type="email" name="email", placeholder="Email"><br>
+        <input type="text" name="user_name" placeholder="User name"><br>
+        <input type="email" name="email" placeholder="Email"><br>
         <input type="password" name="password"><br>
-        <input type="password" name="confirm_password", placeholder="パスワード確認"><br>
+        <input type="password" name="confirm_password" placeholder="パスワード確認"><br>
         <button type="submit">アカウント作成</button>
       </form>
       <a href="signin.php">ログイン画面へ</a>

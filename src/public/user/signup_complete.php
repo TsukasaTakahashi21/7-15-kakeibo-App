@@ -10,9 +10,9 @@ $pdo = new PDO(
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // フォームからのデータを取得
-  $email = isset($_POST['email']) ? trim($_POST['email']) : '';
-  $password = isset($_POST['password']) ? trim($_POST['password']) : '';
-  $username = isset($_POST['user_name']) ? trim($_POST['user_name']) : '';
+  $email = isset($_POST['email']) ? $_POST['email'] : '';
+  $password = isset($_POST['password']) ? $_POST['password'] : '';
+  $username = isset($_POST['user_name']) ? $_POST['user_name']  : '';
   
   // パスワードのハッシュ化
   $hashed_password = password_hash($password, PASSWORD_DEFAULT);
