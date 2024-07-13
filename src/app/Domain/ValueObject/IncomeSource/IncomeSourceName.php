@@ -7,6 +7,10 @@ class IncomeSourceName
 
   public function __construct(string $name)
   {
+    if (empty($name)) {
+      throw new \InvalidArgumentException('収入源名が空です');
+    }
+
     $this->name = $name;
   }
 

@@ -29,7 +29,7 @@ class IncomeSourceRepository implements IncomeSourceRepositoryInterface
 
   public function findById(int $id): ?IncomeSource
   {
-    $sql = 'SELECT * FORM income_sources WHERE id = :id';
+    $sql = 'SELECT * FROM income_sources WHERE id = :id';
     $stmt = $this->pdo->prepare($sql);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
@@ -54,5 +54,14 @@ class IncomeSourceRepository implements IncomeSourceRepositoryInterface
     }
 
     return $incomeSources;
+  }
+
+  public function update(IncomeSource $incomeSource): void
+  {
+    $sql = 'UPDATE income_sources SET name = :name WHERE id = :id';
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->bindValue(':name', $incomeSource->getName()->getValue(), PDO::PARAM_STR);
+    $stmt->bindValue(':id', $incomeSource->getId(), PDO::PARAM_INT);
+    $stmt->execute();
   }
 }
