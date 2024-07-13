@@ -64,4 +64,12 @@ class IncomeSourceRepository implements IncomeSourceRepositoryInterface
     $stmt->bindValue(':id', $incomeSource->getId(), PDO::PARAM_INT);
     $stmt->execute();
   }
+
+  public function delete(int $id): void
+  {
+    $sql = 'DELETE FROM income_sources WHERE id = :id ';
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+  }
 }

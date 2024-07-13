@@ -1,25 +1,18 @@
 <?php
 session_start();
-$dbUserName = 'root';
-$dbPassword = 'password';
-$pdo = new PDO(
-    'mysql:host=mysql;dbname=kakeibo;charset=utf8',
-    $dbUserName,
-    $dbPassword
-);
+
+require_once '../../../vendor/autoload.php';
+require_once '../../../Config/db.php';
+
+use App\Presentation\Controller\IncomeSource\DeleteIncomeSourceController;
+
+
+$id = isset($_GET['id']) ? $_GET['id'] : '';
 
 if (!isset($_GET['id'])) {
   header('Location: ./index.php');
   exit();
 }
 
-$id = $_GET['id'];
-
-$sql = 'DELETE FROM income_sources WHERE id = :id';
-$statement = $pdo->prepare($sql);
-$statement->bindValue(':id', $id, PDO::PARAM_INT);
-$statement->execute();
-
-header('Location: ./index.php');
-exit();
-?>f
+$controller = new DeleteIncomeSourceController();
+$controller->delete($id);
