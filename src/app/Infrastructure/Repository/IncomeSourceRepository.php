@@ -46,13 +46,13 @@ class IncomeSourceRepository implements IncomeSourceRepositoryInterface
   {
     $sql = 'SELECT * FROM income_sources';
     $stmt = $this->pdo->prepare($sql);
-    $incomeSources = [];
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    while ($row) {
+    $incomeSources = [];
+    foreach ($results as $row) {
       $incomeSources[] = new IncomeSource($row['id'], new IncomeSourceName($row['name']), $row['user_id']);
     }
-
     return $incomeSources;
   }
 
