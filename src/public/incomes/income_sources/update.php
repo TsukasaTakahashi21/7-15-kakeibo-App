@@ -1,32 +1,29 @@
 <?php
 session_start();
-$dbUserName = 'root';
-$dbPassword = 'password';
-$pdo = new PDO(
-    'mysql:host=mysql;dbname=kakeibo;charset=utf8',
-    $dbUserName,
-    $dbPassword
-);
+require_once '../../../vendor/autoload.php';
+require_once '../../../Config/db.php';
 
-// フォームから送信されたデータを取得
-$user_id = isset($_POST['id']) ? $_POST['id'] : '';
-$income_source = isset($_POST['income_source'] )? $_POST['income_source'] : '';
+use App\Presentation\Controller\IncomeSource\EditIncomeSourceController;
+use App\UseCase\Input\IncomeSource\EditIncomeSourceInput;
+
+$id = isset($_POST['id']) ? $_POST['id'] : '';
+$name = isset($_POST['income_source'] )? $_POST['income_source'] : '';
+$userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : '';
+
+$pdo = getPdo();
+$controller = new EditIncomeSourceController($pdo);
 
 $errors = [];
-// 収入源が入力されていない場合
-if (empty($income_source)) {
+if (empty($name)) {
+  var_dump($name);
   $errors[] = '収入源名が入力されていません';
   $_SESSION['errors'] = $errors;
-  header('Location: ./edit.php?id=' . $user_id);
+  header('Location: ./edit.php?id=' . $id);
   exit();
 }
 
-$sql = 'UPDATE income_sources SET name = :name WHERE id = :id';
-$statement = $pdo->prepare($sql);
-$statement->bindValue(':name', $income_source, PDO::PARAM_STR);
-$statement->bindValue(':id', $user_id, PDO::PARAM_INT);
-$statement->execute();
+$input = new EditIncomeSourceInput($id, $name, $userId);
+$controller->update($input);
 
 header('Location: ./index.php');
 exit();
-?>

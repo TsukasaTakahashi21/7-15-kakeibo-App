@@ -1,17 +1,13 @@
 <?php
 session_start();
-$dbUserName = 'root';
-$dbPassword = 'password';
-$pdo = new PDO(
-    'mysql:host=mysql;dbname=kakeibo;charset=utf8',
-    $dbUserName,
-    $dbPassword
-);
+require_once '../../../Config/db.php'; 
+require_once '../../../vendor/autoload.php';
 
-$sql = 'SELECT id, name FROM income_sources';
-$statement = $pdo->prepare($sql);
-$statement->execute(); 
-$income_sources = $statement->fetchAll(PDO::FETCH_ASSOC);
+use App\Presentation\Controller\IncomeSource\IncomeSourceController;
+
+
+$controller = new IncomeSourceController();
+$incomeSources = $controller->index();
 ?>
 
 <!DOCTYPE html>
@@ -43,11 +39,11 @@ $income_sources = $statement->fetchAll(PDO::FETCH_ASSOC);
         <th>編集</th>
         <th>削除</th>
       </tr>
-      <?php foreach($income_sources as $income_source): ?>
+      <?php foreach($incomeSources as $incomeSource): ?>
         <tr>
-          <td><?php echo $income_source['name']; ?></td>
-          <td><a href="./edit.php?id=<?php echo htmlspecialchars($income_source['id'], ENT_QUOTES, 'UTF-8'); ?>">編集</a></td>
-          <td><a href="../income_sources/delete.php?id=<?php echo htmlspecialchars($income_source['id'], ENT_QUOTES, 'UTF-8'); ?>">削除</a></td>
+          <td><?php echo htmlspecialchars($incomeSource['name'], ENT_QUOTES, 'UTF-8'); ?></td>
+          <td><a href="./edit.php?id=<?php echo htmlspecialchars($incomeSource['id'], ENT_QUOTES, 'UTF-8'); ?>">編集</a></td>
+          <td><a href="../income_sources/delete.php?id=<?php echo htmlspecialchars($incomeSource['id'], ENT_QUOTES, 'UTF-8'); ?>">削除</a></td>
         </tr>
       <?php endforeach; ?>
     </table>
