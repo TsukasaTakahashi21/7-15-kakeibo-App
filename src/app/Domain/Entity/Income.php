@@ -1,39 +1,49 @@
 <?php
 namespace App\Domain\Entity;
 
+use App\Domain\ValueObject\Income\IncomeSourceId;
+use App\Domain\ValueObject\Income\Amount;
+use App\Domain\ValueObject\Income\AccrualDate;
+
 class Income
 {
-  private int $id;
-  private int $userId;
-  private int $incomeSourceId;
-  private int $amount;
-  private string $accrualDate;
+    private ?int $id;
+    private int $userId;
+    private IncomeSourceId $incomeSourceId; 
+    private Amount $amount; 
+    private AccrualDate $accrualDate; 
 
-  public function __construct(int $userId, int $incomeSourceId, int $amount, string $accrualDate)
-  {
-    $this->userId = $userId;
-    $this->incomeSourceId = $incomeSourceId;
-    $this->amount = $amount;
-    $this->accrualDate = $accrualDate;
-  }
-
-  public function getUserId(): int
+    public function __construct(int $userId, IncomeSourceId $incomeSourceId, Amount $amount, AccrualDate $accrualDate, ?int $id)
     {
-      return $this->userId;
+      $this->id = $id;
+      $this->userId = $userId;
+      $this->incomeSourceId = $incomeSourceId;
+      $this->amount = $amount;
+      $this->accrualDate = $accrualDate;
     }
 
-    public function getIncomeSourceId(): int
+    public function getUserId(): int
     {
-      return $this->incomeSourceId;
+        return $this->userId;
     }
 
-    public function getAmount(): int
+    public function getIncomeSourceId(): IncomeSourceId
     {
-      return $this->amount;
+        return $this->incomeSourceId;
     }
 
-    public function getAccrualDate(): string
+    public function getAmount(): Amount
     {
-      return $this->accrualDate;
+        return $this->amount;
+    }
+
+    public function getAccrualDate(): AccrualDate
+    {
+        return $this->accrualDate;
+    }
+
+    public function getId(): int
+    {
+      return $this->id;
     }
 }

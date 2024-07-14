@@ -3,6 +3,9 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Income;
 use App\Domain\Repository\IncomeRepositoryInterface;
+use App\Domain\ValueObject\Income\IncomeSourceId; 
+use App\Domain\ValueObject\Income\Amount; 
+use App\Domain\ValueObject\Income\AccrualDate;
 use PDO;
 
 class IncomeRepository implements IncomeRepositoryInterface
@@ -32,13 +35,14 @@ class IncomeRepository implements IncomeRepositoryInterface
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if ($result) {
       return new Income(
-        $result['id'],
         $result['user_id'],
-        $result['income_source_id'],
-        $result['amount'],
-        $result['accrual_date']
+        new IncomeSourceId($result['income_source_id']),
+        new Amount($result['amount']),
+        new AccrualDate($result['accrual_date']), 
+        $result['id'],
       );
     }
     return null;
@@ -60,6 +64,17 @@ class IncomeRepository implements IncomeRepositoryInterface
       );
     }
     return $incomes;
+  }
+
+  public function update(Income $income): void
+  {
+    $sql = 'UPDATE incomes SET income_source_id = :income_source_id, amount = :amount, accrual_date = :accrual_date WHERE id = :id';
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->bindValue(':income_source_id', $income->getIncomeSourceId()->getValue(), PDO::PARAM_INT);
+    $stmt->bindValue(':amount', $income->getAmount()->getValue(), PDO::PARAM_INT);
+    $stmt->bindValue(':accrual_date', $income->getAccrualDate()->getValue());
+    $stmt->bindValue(':id', $income->getId(), PDO::PARAM_INT);
+    $stmt->execute();
   }
 
 }

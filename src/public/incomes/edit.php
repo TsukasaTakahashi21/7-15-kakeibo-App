@@ -1,38 +1,30 @@
 <?php
 session_start();
-$errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : '';
+require_once '../../Config/db.php';
+require_once '../../vendor/autoload.php';
+
+use App\Infrastructure\Repository\IncomeRepository;
+use App\UseCase\Interactor\Income\EditIncomeInteractor;
+use App\Presentation\Controller\Income\EditIncomeController;
+use App\Presentation\Controller\IncomeSource\IncomeSourceController;
+
+$controller = new IncomeSourceController();
+$incomeSources = $controller->index();
+
+$pdo = getPdo();
+$incomeRepository = new IncomeRepository($pdo);
+$editIncomeInteractor = new EditIncomeInteractor($incomeRepository);
+$controller = new EditIncomeController($editIncomeInteractor);
+
+$id = $_GET['id'] ?? null;
+$income = $incomeRepository->findById($id);
+$incomeAmount = $income->getAmount()->getValue();
+$incomeDate = $income->getAccrualDate()->getValue();
+$incomeSourceId = $income->getIncomeSourceId()->getValue(); 
+
+$errors = isset($_SESSION['errors']) ?? '';
 unset($_SESSION['errors']);
 
-$dbUserName = 'root';
-$dbPassword = 'password';
-$pdo = new PDO(
-    'mysql:host=mysql;dbname=kakeibo;charset=utf8',
-    $dbUserName,
-    $dbPassword
-);
-
-// 収入データのIDを取得
-if (isset($_GET['id'])) {
-  $id = $_GET['id'];
-} else {
-  echo 'IDが指定されていません';
-  exit();
-}
-
-$sql = 'SELECT incomes.amount, incomes.accrual_date, income_sources.name as income_source FROM incomes JOIN income_sources ON incomes.income_source_id = income_sources.id WHERE incomes.id = :id';
-$statement = $pdo->prepare($sql);
-$statement->bindValue(':id', $id, PDO::PARAM_INT);
-$statement->execute(); 
-$income = $statement->fetch(PDO::FETCH_ASSOC);
-
-if (!$income) {
-  echo '該当する収入データが見つかりません。';
-  exit();
-}
-// 収入データの各値を変数に格納
-$income_source = $income['income_source'];
-$income_amount = $income['amount'];
-$accrual_date = $income['accrual_date'];
 ?>
 
 <!DOCTYPE html>
@@ -57,37 +49,34 @@ $accrual_date = $income['accrual_date'];
   <section class="edit_income">
     <h2 class="section-title">収入編集</h2>
       <!-- エラーメッセージの表示 -->
-      <?php if (!empty($errors)): ?>
+      <?php if (!empty($_SESSION['errors'])): ?>
         <ul>
-          <?php foreach($errors as $error): ?>
+          <?php foreach($_SESSION['errors'] as $error): ?>
             <li><?php echo htmlentities($error, ENT_QUOTES, 'UTF-8'); ?></li>
           <?php endforeach; ?>
         </ul>
-      <?php endif; ?>
+      <?php unset($_SESSION['errors']);
+            endif; ?>
 
       <!-- 編集フォーム -->
       <form action="./update.php" method="post">
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($id, ENT_QUOTES, 'UTF-8'); ?>">
         <label>収入源:
-          <select name="income_source" id="">
-            <?php 
-              // 収入源の選択肢を作成
-              $sql = 'SELECT id, name FROM income_sources';
-              $statement = $pdo->prepare($sql);
-              $statement->execute(); 
-              while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-                $selected = ($row['name'] == $income_source) ? 'selected' : '';
-                echo '<option value="'.htmlspecialchars($row['id'], ENT_QUOTES, 'UTF-8').'" '.$selected.'>'. $row['name'].'</option>';
-              }
-            ?>
-          </select>
+        <select name="income_source" id="">
+          <?php foreach ($incomeSources as $source): ?>
+              <option value="<?php echo $source['id']; ?>" <?php echo ($source['id'] == $incomeSourceId) ? 'selected' : ''; ?>>
+                  <?php echo htmlspecialchars($source['name'], ENT_QUOTES, 'UTF-8'); ?>
+              </option>
+          <?php endforeach; ?>
+      </select>
+          <a href="income_sources/index.php">収入源一覧へ</a>
         </label><br>
         <label>金額:
-          <input type="text" name="amount" value="<?php echo htmlspecialchars($income_amount , ENT_QUOTES, 'UTF-8'); ?>">円
+          <input type="text" name="amount" value="<?php echo htmlspecialchars($incomeAmount, ENT_QUOTES, 'UTF-8'); ?>">円
         </label><br>
         <label>日付:
-          <input type="date" name="date" value="<?php echo htmlspecialchars($accrual_date, ENT_QUOTES, 'UTF-8'); ?>">
-        </label>
+          <input type="date" name="date" value="<?php echo htmlspecialchars($incomeDate, ENT_QUOTES, 'UTF-8'); ?>">
+        </label><br>
         <button type="submit">編集</button>
       </form>
   </section>

@@ -5,6 +5,9 @@ use App\Domain\Entity\Income;
 use App\UseCase\Input\Income\CreateIncomeInput;
 use App\Infrastructure\Repository\IncomeRepository;
 use App\Presentation\Presenter\Income\CreateIncomePresenter;
+use App\Domain\ValueObject\Income\IncomeSourceId; 
+use App\Domain\ValueObject\Income\Amount;
+use App\Domain\ValueObject\Income\AccrualDate; 
 
 class CreateIncomeInteractor
 {
@@ -23,7 +26,13 @@ class CreateIncomeInteractor
       throw new \InvalidArgumentException('収入源、金額、日付は必須項目です');
     }
 
-    $income = new Income($input->getUserId(), $input->getIncomeSourceId(), $input->getAmount(), $input->getAccrualDate());
+    $income = new Income
+    ($input->getUserId(), 
+    new IncomeSourceId ($input->getIncomeSourceId()), 
+    new Amount($input->getAmount()), 
+    new AccrualDate($input->getAccrualDate()),
+    0
+  );
     $this->repository->save($income);
     $this->presenter->output(['success' => '収入が登録されました']);
   }
