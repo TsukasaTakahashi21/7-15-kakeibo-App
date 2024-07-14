@@ -77,5 +77,12 @@ class IncomeRepository implements IncomeRepositoryInterface
     $stmt->execute();
   }
 
+  public function delete(Income $income): void
+  {
+    $sql = 'DELETE FROM incomes WHERE id = :id';
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->bindValue(':id', $income->getId(), PDO::PARAM_INT);
+    $stmt->execute();
+  }
 }
 

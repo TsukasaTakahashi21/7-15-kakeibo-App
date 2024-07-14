@@ -9,6 +9,6 @@ interface IncomeRepositoryInterface
   public function findById(int $id): ?Income;
   public function findAll(): array;
   public function update(Income $income): void;
-  
+  public function delete(Income $income): Void;
 
 }

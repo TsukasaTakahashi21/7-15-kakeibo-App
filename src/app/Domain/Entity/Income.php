@@ -8,12 +8,12 @@ use App\Domain\ValueObject\Income\AccrualDate;
 class Income
 {
     private ?int $id;
-    private int $userId;
-    private IncomeSourceId $incomeSourceId; 
-    private Amount $amount; 
-    private AccrualDate $accrualDate; 
+    private ?int $userId;
+    private ?IncomeSourceId $incomeSourceId; 
+    private ?Amount $amount; 
+    private ?AccrualDate $accrualDate; 
 
-    public function __construct(int $userId, IncomeSourceId $incomeSourceId, Amount $amount, AccrualDate $accrualDate, ?int $id)
+    public function __construct(?int $userId, ?IncomeSourceId $incomeSourceId, ?Amount $amount, ?AccrualDate $accrualDate, ?int $id)
     {
       $this->id = $id;
       $this->userId = $userId;
@@ -22,27 +22,27 @@ class Income
       $this->accrualDate = $accrualDate;
     }
 
-    public function getUserId(): int
+    public function getUserId(): ?int
     {
         return $this->userId;
     }
 
-    public function getIncomeSourceId(): IncomeSourceId
+    public function getIncomeSourceId(): ?IncomeSourceId
     {
         return $this->incomeSourceId;
     }
 
-    public function getAmount(): Amount
+    public function getAmount(): ?Amount
     {
         return $this->amount;
     }
 
-    public function getAccrualDate(): AccrualDate
+    public function getAccrualDate(): ?AccrualDate
     {
         return $this->accrualDate;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
       return $this->id;
     }

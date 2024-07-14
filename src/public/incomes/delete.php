@@ -1,28 +1,28 @@
 <?php
 session_start();
-$dbUserName = 'root';
-$dbPassword = 'password';
-$pdo = new PDO(
-    'mysql:host=mysql;dbname=kakeibo;charset=utf8',
-    $dbUserName,
-    $dbPassword
-);
+require_once '../../Config/db.php';
+require_once '../../vendor/autoload.php';
 
+use App\Infrastructure\Repository\IncomeRepository;
+use App\UseCase\Interactor\Income\DeleteIncomeInteractor;
+use App\Presentation\Controller\Income\DeleteIncomeController;
+
+$pdo = getPdo();
+$incomeRepository = new IncomeRepository($pdo);
+$DeleteIncomeInteractor = new DeleteIncomeInteractor($incomeRepository);
+$controller = new DeleteIncomeController($DeleteIncomeInteractor);
+
+$id = $_GET['id'];
 if (!isset($_GET['id'])) {
   echo "IDが指定されていません。";
   exit;
 }
 
-$id = $_GET['id'];
-
-$sql = 'DELETE FROM incomes WHERE id = :id';
-$statement = $pdo->prepare($sql);
-$statement->bindValue(':id', $id, PDO::PARAM_INT);
-
-if ($statement->execute()) {
+try {
+  $controller->delete($id);
   header('Location: ./index.php');
   exit();
-} else {
-  echo "削除に失敗しました。";
+} catch (Exception $e) {
+  echo '削除に失敗しました' . $e->getMessage();
 }
-?>
+
